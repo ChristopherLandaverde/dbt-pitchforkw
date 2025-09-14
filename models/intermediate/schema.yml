@@ -1,0 +1,96 @@
+version: 2
+
+models:
+  - name: int_artist_metrics
+    description: "Artist performance calculations and career trajectory analysis"
+    columns:
+      - name: artist_name
+        description: "Artist name"
+        tests:
+          - not_null
+      - name: total_reviews
+        description: "Total number of reviews for this artist"
+        tests:
+          - not_null
+      - name: avg_score
+        description: "Average score across all reviews"
+        tests:
+          - not_null
+      - name: score_trend
+        description: "Trend direction for artist scores (Improving/Declining/Stable)"
+      - name: career_stage
+        description: "Career stage classification (New/Emerging/Established/Veteran)"
+      - name: activity_level
+        description: "Activity level based on review count (High/Medium/Low)"
+      - name: quality_consistency
+        description: "Score consistency level (Consistent/Variable/Inconsistent)"
+
+  - name: int_genre_trends
+    description: "Genre analysis and trending patterns over time"
+    columns:
+      - name: primary_genre
+        description: "Primary genre classification"
+        tests:
+          - not_null
+      - name: review_decade
+        description: "Decade of reviews (2000s/2010s/2020s)"
+        tests:
+          - not_null
+      - name: decade_review_count
+        description: "Number of reviews in this decade for this genre"
+        tests:
+          - not_null
+      - name: decade_avg_score
+        description: "Average score for this genre in this decade"
+      - name: trend_direction
+        description: "Trend direction (Rising/Declining/Stable/New)"
+      - name: genre_health_score
+        description: "Composite health score for the genre"
+
+  - name: int_score_trends
+    description: "Review score analysis and trending patterns"
+    columns:
+      - name: review_year
+        description: "Year of reviews"
+        tests:
+          - not_null
+      - name: review_quarter
+        description: "Quarter of reviews (Q1/Q2/Q3/Q4)"
+        tests:
+          - not_null
+      - name: total_reviews
+        description: "Total number of reviews in this period"
+        tests:
+          - not_null
+      - name: avg_score
+        description: "Average score for this period"
+        tests:
+          - not_null
+      - name: score_trend_direction
+        description: "Score trend direction (Rising/Falling/Stable)"
+      - name: review_volume_trend
+        description: "Review volume trend (Growing/Declining/Stable)"
+
+  - name: int_reviewer_metrics
+    description: "Reviewer performance and analysis patterns"
+    columns:
+      - name: reviewer
+        description: "Reviewer name"
+        tests:
+          - not_null
+      - name: total_reviews
+        description: "Total number of reviews by this reviewer"
+        tests:
+          - not_null
+      - name: avg_score
+        description: "Average score given by this reviewer"
+        tests:
+          - not_null
+      - name: experience_level
+        description: "Reviewer experience level (New/Junior/Mid-level/Experienced/Veteran)"
+      - name: activity_level
+        description: "Reviewer activity level (Low/Moderate/Active/Very Active)"
+      - name: scoring_consistency
+        description: "Scoring consistency (Very Consistent/Consistent/Variable/Inconsistent)"
+      - name: generosity_level
+        description: "Generosity level (Very Critical/Critical/Moderate/Generous/Very Generous)"

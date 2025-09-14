@@ -1,0 +1,59 @@
+version: 2
+
+# Test configuration for marts models
+# This file configures test behavior and severity levels
+
+tests:
+  # Data quality tests
+  - name: test_mart_data_quality
+    config:
+      severity: error
+      store_failures: true
+    description: "Ensures all marts have data"
+
+  # Business logic tests
+  - name: test_artist_business_logic
+    config:
+      severity: error
+      store_failures: true
+    description: "Validates business logic for artist performance metrics"
+
+  - name: test_genre_business_logic
+    config:
+      severity: error
+      store_failures: true
+    description: "Validates business logic for genre analysis"
+
+  - name: test_review_insights_business_logic
+    config:
+      severity: error
+      store_failures: true
+    description: "Validates business logic for review insights"
+
+  - name: test_editorial_dashboard_business_logic
+    config:
+      severity: error
+      store_failures: true
+    description: "Validates business logic for editorial dashboard"
+
+  # Cross-model consistency tests
+  - name: test_cross_model_consistency
+    config:
+      severity: error
+      store_failures: true
+    description: "Ensures consistency across all marts models"
+
+  # Data freshness tests
+  - name: test_data_freshness
+    config:
+      severity: warn
+      store_failures: true
+    description: "Ensures data freshness across marts"
+
+  # Performance tests
+  - name: test_performance_metrics
+    config:
+      severity: warn
+      store_failures: true
+    description: "Validates performance metrics distribution and quality"
+

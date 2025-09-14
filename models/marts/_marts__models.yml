@@ -1,0 +1,1326 @@
+version: 2
+
+# Comprehensive testing for marts models
+# This file contains advanced testing strategies for data quality and business rule validation
+
+models:
+  - name: mart_artist_performance
+    description: "Artist success metrics and career trajectory analysis for business stakeholders"
+    config:
+      materialized: table
+      tags: ['marts', 'business_metrics', 'artist_analysis']
+    
+    # Model-level tests
+    tests:
+      - dbt_expectations.expect_table_row_count_to_be_between:
+          arguments:
+            min_value: 1
+            max_value: 10000
+      - dbt_expectations.expect_table_column_count_to_be_between:
+          arguments:
+            min_value: 20
+            max_value: 50
+    
+    columns:
+      - name: artist_name
+        description: "Artist name (primary key)"
+        tests:
+          - not_null
+          - unique
+          - dbt_expectations.expect_column_values_to_not_be_null
+          - dbt_expectations.expect_column_value_lengths_to_be_between:
+              arguments:
+                min_value: 1
+                max_value: 200
+      
+      - name: total_reviews
+        description: "Total number of reviews for this artist"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 1
+                max_value: 1000
+      
+      - name: avg_score
+        description: "Average review score across all reviews"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 10
+          - dbt_expectations.expect_column_values_to_not_be_null
+      
+      - name: best_new_music_count
+        description: "Number of times this artist received 'Best New Music' designation"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 100
+      
+      - name: best_new_music_percentage
+        description: "Percentage of reviews that received 'Best New Music' designation"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 100
+      
+      - name: career_span_years
+        description: "Number of years between first and latest review"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 50
+      
+      - name: min_score
+        description: "Lowest score received by this artist"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 10
+      
+      - name: max_score
+        description: "Highest score received by this artist"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 10
+      
+      - name: score_consistency
+        description: "Standard deviation of scores (lower = more consistent)"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 5
+      
+      - name: first_review_date
+        description: "Date of first review"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: '1999-01-01'
+                max_value: '2025-12-31'
+      
+      - name: latest_review_date
+        description: "Date of most recent review"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: '1999-01-01'
+                max_value: '2025-12-31'
+      
+      - name: recent_avg_score
+        description: "Average score for reviews in the last 2 years"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 10
+      
+      - name: recent_review_count
+        description: "Number of reviews in the last 2 years"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 100
+      
+      - name: career_stage
+        description: "Career stage classification"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['New Artist', 'Emerging Artist', 'Established Artist', 'Veteran Artist']
+      
+      - name: activity_level
+        description: "Activity level based on review count"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['Low Activity', 'Medium Activity', 'High Activity']
+      
+      - name: quality_consistency
+        description: "Quality consistency level"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['Consistent', 'Variable', 'Inconsistent']
+      
+      - name: score_trend
+        description: "Score trend direction"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['Improving', 'Declining', 'Stable', 'No recent reviews']
+      
+      - name: success_tier
+        description: "Business success tier classification"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['Elite Artist', 'High Quality Artist', 'Quality Artist', 'Prolific Artist', 'Decent Artist', 'Emerging Artist']
+      
+      - name: career_momentum
+        description: "Career momentum assessment"
+        tests:
+          - not_null
+      
+      - name: commercial_potential
+        description: "Commercial potential assessment"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['High Commercial Potential', 'Moderate Commercial Potential', 'Quality Potential', 'Limited Commercial Potential']
+      
+      - name: risk_level
+        description: "Risk assessment for business decisions"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['High Risk - Single Review', 'Medium Risk - Single Reviewer', 'Medium Risk - Inconsistent Quality', 'Medium Risk - No Recent Activity', 'Low Risk']
+      
+      - name: unique_reviewers
+        description: "Number of unique reviewers who reviewed this artist"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 1
+                max_value: 100
+      
+      - name: overall_success_score
+        description: "Composite success score (0-10, higher is better)"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 10
+      
+      - name: is_single_review_artist
+        description: "Flag for artists with only one review"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [true, false]
+      
+      - name: is_single_reviewer_artist
+        description: "Flag for artists reviewed by only one reviewer"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [true, false]
+      
+      - name: last_updated
+        description: "Timestamp when this record was last updated"
+        tests:
+          - not_null
+
+  - name: mart_genre_analysis
+    description: "Genre trend analysis and health metrics for editorial decision-making"
+    config:
+      materialized: table
+      tags: ['marts', 'editorial_metrics', 'genre_analysis']
+    
+    # Model-level tests
+    tests:
+      - dbt_expectations.expect_table_row_count_to_be_between:
+          arguments:
+            min_value: 5
+            max_value: 100
+      - dbt_expectations.expect_table_column_count_to_be_between:
+          arguments:
+            min_value: 25
+            max_value: 40
+    
+    columns:
+      - name: primary_genre
+        description: "Primary genre classification"
+        tests:
+          - not_null
+          - unique
+          - dbt_expectations.expect_column_values_to_not_be_null
+      
+      - name: current_review_count
+        description: "Number of reviews in the current decade"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 10000
+      
+      - name: current_artist_count
+        description: "Number of unique artists in the current decade"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 5000
+      
+      - name: current_avg_score
+        description: "Average score for the current decade"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 10
+      
+      - name: current_bnm_percentage
+        description: "Best new music percentage for the current decade"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 100
+      
+      - name: current_count_rank
+        description: "Rank by review count in current decade (1 = highest)"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 1
+                max_value: 20
+      
+      - name: current_score_rank
+        description: "Rank by average score in current decade (1 = highest)"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 1
+                max_value: 20
+      
+      - name: current_bnm_rank
+        description: "Rank by BNM percentage in current decade (1 = highest)"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 1
+                max_value: 20
+      
+      - name: current_trend
+        description: "Current trend direction"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['Rising', 'Declining', 'Stable', 'New']
+      
+      - name: current_health_score
+        description: "Composite health score for the genre"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 20
+      
+      - name: decades_active
+        description: "Number of decades this genre has been active"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 1
+                max_value: 3
+      
+      - name: total_all_time_reviews
+        description: "Total reviews across all decades"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 50000
+      
+      - name: total_all_time_artists
+        description: "Total unique artists across all decades"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 20000
+      
+      - name: all_time_avg_score
+        description: "Average score across all decades"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 10
+      
+      - name: all_time_bnm_percentage
+        description: "Average BNM percentage across all decades"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 100
+      
+      - name: peak_decade_reviews
+        description: "Highest review count in any single decade"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 20000
+      
+      - name: peak_decade_score
+        description: "Highest average score in any single decade"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 10
+      
+      - name: score_volatility
+        description: "Range between highest and lowest decade scores"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 10
+      
+      - name: lifecycle_stage
+        description: "Genre lifecycle stage classification"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['Emerging Genre', 'New Genre', 'Growing Genre', 'Declining Genre', 'Mature Genre', 'Established Genre', 'Uncertain Stage']
+      
+      - name: market_position
+        description: "Market position relative to other genres"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['Dominant Genre', 'Major Genre', 'Significant Genre', 'Niche Genre']
+      
+      - name: quality_tier
+        description: "Quality tier classification"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['High Quality Genre', 'Quality Genre', 'Average Quality Genre', 'Lower Quality Genre']
+      
+      - name: commercial_viability
+        description: "Commercial viability assessment"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['High Commercial Value', 'Moderate Commercial Value', 'Limited Commercial Value', 'Minimal Commercial Value']
+      
+      - name: investment_recommendation
+        description: "Investment recommendation for editorial decisions"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['High Investment Potential', 'Moderate Investment Potential', 'Stable Investment', 'Limited Investment', 'Monitor Closely']
+      
+      - name: avg_reviews_per_artist
+        description: "Average number of reviews per artist in this genre"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 50
+      
+      - name: estimated_bnm_count
+        description: "Estimated number of BNM designations"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 1000
+      
+      - name: trend_strength
+        description: "Strength of the trend"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['Strong Trend', 'Moderate Trend', 'Weak Trend', 'Stable']
+      
+      - name: editorial_priority_score
+        description: "Composite priority score for editorial decisions"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 50
+      
+      - name: last_updated
+        description: "Timestamp when this record was last updated"
+        tests:
+          - not_null
+
+  - name: mart_review_insights
+    description: "Review pattern analysis and score trends for editorial insights"
+    config:
+      materialized: table
+      tags: ['marts', 'editorial_metrics', 'review_analysis']
+    
+    # Model-level tests
+    tests:
+      - dbt_expectations.expect_table_row_count_to_be_between:
+          arguments:
+            min_value: 10
+            max_value: 1000
+      - dbt_expectations.expect_table_column_count_to_be_between:
+          arguments:
+            min_value: 30
+            max_value: 50
+    
+    columns:
+      - name: review_year
+        description: "Year of reviews"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 1999
+                max_value: 2025
+      
+      - name: review_quarter
+        description: "Quarter of reviews (Q1/Q2/Q3/Q4)"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['Q1', 'Q2', 'Q3', 'Q4']
+      
+      - name: total_reviews
+        description: "Total number of reviews in this period"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 10000
+      
+      - name: unique_artists
+        description: "Number of unique artists reviewed in this period"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 5000
+      
+      - name: unique_reviewers
+        description: "Number of unique reviewers active in this period"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 100
+      
+      - name: avg_score
+        description: "Average review score for this period"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 10
+      
+      - name: high_score_percentage
+        description: "Percentage of reviews with score 8.0+"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 100
+      
+      - name: medium_score_percentage
+        description: "Percentage of reviews with score 6.0-7.9"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 100
+      
+      - name: low_score_percentage
+        description: "Percentage of reviews with score <6.0"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 100
+      
+      - name: best_new_music_percentage
+        description: "Percentage of reviews designated as Best New Music"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 100
+      
+      - name: exceptional_count
+        description: "Number of reviews with score 9.0+"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 1000
+      
+      - name: excellent_count
+        description: "Number of reviews with score 8.0-8.9"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 2000
+      
+      - name: good_count
+        description: "Number of reviews with score 7.0-7.9"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 3000
+      
+      - name: score_trend_direction
+        description: "Score trend direction"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['Rising', 'Falling', 'Stable']
+      
+      - name: review_volume_trend
+        description: "Review volume trend"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['Growing', 'Declining', 'Stable']
+      
+      - name: editorial_alert
+        description: "Editorial alert level"
+        tests:
+          - not_null
+      
+      - name: quality_assessment
+        description: "Quality assessment for this period"
+        tests:
+          - not_null
+      
+      - name: avg_reviews_per_reviewer
+        description: "Average number of reviews per reviewer"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 50
+      
+      - name: artist_diversity_pct
+        description: "Percentage of unique artists relative to total reviews"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 100
+      
+      - name: editorial_recommendation
+        description: "Editorial recommendation based on trends"
+        tests:
+          - not_null
+      
+      - name: content_strategy_insight
+        description: "Content strategy insight for this period"
+        tests:
+          - not_null
+      
+      - name: editorial_kpi_score
+        description: "Composite editorial KPI score"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 100
+      
+      - name: trend_strength
+        description: "Strength of the current trend"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['Strong Trend', 'Moderate Trend', 'Weak Trend', 'Stable']
+      
+      - name: last_updated
+        description: "Timestamp when this record was last updated"
+        tests:
+          - not_null
+
+  - name: mart_editorial_dashboard
+    description: "Editorial team metrics and reviewer analysis for management insights"
+    config:
+      materialized: table
+      tags: ['marts', 'management_metrics', 'reviewer_analysis']
+    
+    # Model-level tests
+    tests:
+      - dbt_expectations.expect_table_row_count_to_be_between:
+          arguments:
+            min_value: 5
+            max_value: 500
+      - dbt_expectations.expect_table_column_count_to_be_between:
+          arguments:
+            min_value: 40
+            max_value: 60
+    
+    columns:
+      - name: reviewer
+        description: "Reviewer name (primary key)"
+        tests:
+          - not_null
+          - unique
+          - dbt_expectations.expect_column_values_to_not_be_null
+          - dbt_expectations.expect_column_value_lengths_to_be_between:
+              arguments:
+                min_value: 1
+                max_value: 100
+      
+      - name: total_reviews
+        description: "Total number of reviews by this reviewer"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 1
+                max_value: 2000
+      
+      - name: avg_score
+        description: "Average score given by this reviewer"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 10
+      
+      - name: best_new_music_count
+        description: "Number of BNM designations given"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 500
+      
+      - name: best_new_music_percentage
+        description: "Percentage of reviews designated as BNM"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 100
+      
+      - name: unique_artists_reviewed
+        description: "Number of unique artists reviewed"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 1
+                max_value: 1000
+      
+      - name: artist_diversity_percentage
+        description: "Percentage of unique artists relative to total reviews"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 100
+      
+      - name: first_review_date
+        description: "Date of first review"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: '1999-01-01'
+                max_value: '2025-12-31'
+      
+      - name: latest_review_date
+        description: "Date of most recent review"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: '1999-01-01'
+                max_value: '2025-12-31'
+      
+      - name: career_span_years
+        description: "Number of years as an active reviewer"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 30
+      
+      - name: recent_review_count
+        description: "Number of reviews in the last 2 years"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 200
+      
+      - name: recent_avg_score
+        description: "Average score for reviews in the last 2 years"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 10
+      
+      - name: min_score
+        description: "Lowest score given"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 10
+      
+      - name: max_score
+        description: "Highest score given"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 10
+      
+      - name: score_stddev
+        description: "Standard deviation of scores (consistency measure)"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 5
+      
+      - name: median_score
+        description: "Median score given"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 10
+      
+      - name: score_trend
+        description: "Recent score trend"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['Becoming more generous', 'Becoming more critical', 'Stable scoring', 'No recent reviews']
+      
+      - name: reviewer_classification
+        description: "Reviewer classification level"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['Senior Reviewer', 'Experienced Reviewer', 'Mid-level Reviewer', 'Junior Reviewer', 'Occasional Reviewer']
+      
+      - name: experience_level
+        description: "Experience level based on review count"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['Veteran', 'Experienced', 'Mid-level', 'Junior', 'New']
+      
+      - name: activity_level
+        description: "Activity level based on review count"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['Very Active', 'Active', 'Moderate', 'Low Activity']
+      
+      - name: scoring_consistency
+        description: "Scoring consistency level"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['Very Consistent', 'Consistent', 'Variable', 'Inconsistent']
+      
+      - name: generosity_level
+        description: "Generosity level compared to team average"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['Very Generous', 'Generous', 'Moderate', 'Critical', 'Very Critical']
+      
+      - name: current_workload
+        description: "Current workload assessment"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['High Workload', 'Moderate Workload', 'Light Workload', 'Minimal Workload', 'Inactive']
+      
+      - name: specialization
+        description: "Primary genre specialization"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['Rock Specialist', 'Pop/Electronic Specialist', 'Jazz/Blues Specialist', 'Hip-Hop/R&B Specialist', 'Folk/Country Specialist', 'Experimental Specialist', 'Generalist']
+      
+      - name: risk_assessment
+        description: "Risk assessment for management"
+        tests:
+          - not_null
+      
+      - name: rank_by_activity
+        description: "Rank by total review count (1 = highest)"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 1
+                max_value: 1000
+      
+      - name: rank_by_avg_score
+        description: "Rank by average score (1 = highest)"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 1
+                max_value: 1000
+      
+      - name: rank_by_bnm_count
+        description: "Rank by BNM count (1 = highest)"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 1
+                max_value: 1000
+      
+      - name: rank_by_diversity
+        description: "Rank by artist diversity (1 = highest)"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 1
+                max_value: 1000
+      
+      - name: activity_percentile
+        description: "Activity percentile (1-10, 10 = top 10%)"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 1
+                max_value: 10
+      
+      - name: score_percentile
+        description: "Score percentile (1-10, 10 = top 10%)"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 1
+                max_value: 10
+      
+      - name: bnm_percentile
+        description: "BNM percentile (1-10, 10 = top 10%)"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 1
+                max_value: 10
+      
+      - name: diversity_percentile
+        description: "Diversity percentile (1-10, 10 = top 10%)"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 1
+                max_value: 10
+      
+      - name: overall_performance_score
+        description: "Composite performance score (0-10, higher is better)"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 10
+      
+      - name: rock_reviews
+        description: "Number of rock genre reviews"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 1000
+      
+      - name: pop_electronic_reviews
+        description: "Number of pop/electronic genre reviews"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 1000
+      
+      - name: jazz_blues_reviews
+        description: "Number of jazz/blues genre reviews"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 1000
+      
+      - name: hip_hop_rb_reviews
+        description: "Number of hip-hop/R&B genre reviews"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 1000
+      
+      - name: folk_country_reviews
+        description: "Number of folk/country genre reviews"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 1000
+      
+      - name: experimental_reviews
+        description: "Number of experimental genre reviews"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 1000
+      
+      - name: total_reviewers
+        description: "Total number of reviewers in team"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 1
+                max_value: 1000
+      
+      - name: avg_reviews_per_reviewer
+        description: "Team average reviews per reviewer"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 100
+      
+      - name: team_avg_score
+        description: "Team average score"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 10
+      
+      - name: team_avg_bnm_percentage
+        description: "Team average BNM percentage"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 100
+      
+      - name: team_avg_diversity
+        description: "Team average artist diversity percentage"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 100
+      
+      - name: avg_team_experience
+        description: "Average team experience in years"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 30
+      
+      - name: performance_tier
+        description: "Performance tier classification"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['High Performer', 'Good Performer', 'Average Performer', 'Needs Attention']
+      
+      - name: management_action
+        description: "Recommended management action"
+        tests:
+          - not_null
+      
+      - name: development_recommendation
+        description: "Development recommendation for this reviewer"
+        tests:
+          - not_null
+      
+      - name: is_occasional_reviewer
+        description: "Flag for reviewers with fewer than 3 reviews"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [true, false]
+      
+      - name: is_single_artist_reviewer
+        description: "Flag for reviewers who only review one artist"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [true, false]
+      
+      - name: last_updated
+        description: "Timestamp when this record was last updated"
+        tests:
+          - not_null
+
+# Custom tests for business logic validation
+tests:
+  - name: test_artist_score_consistency
+    description: "Test that min_score <= avg_score <= max_score for all artists"
+    test_type: generic
+    model: mart_artist_performance
+    config:
+      severity: error
+    test_definition: |
+      select *
+      from {{ ref('mart_artist_performance') }}
+      where not (min_score <= avg_score and avg_score <= max_score)
+
+  - name: test_artist_career_span_logic
+    description: "Test that latest_review_date >= first_review_date for all artists"
+    test_type: generic
+    model: mart_artist_performance
+    config:
+      severity: error
+    test_definition: |
+      select *
+      from {{ ref('mart_artist_performance') }}
+      where latest_review_date < first_review_date
+
+  - name: test_artist_bnm_logic
+    description: "Test that best_new_music_count <= total_reviews for all artists"
+    test_type: generic
+    model: mart_artist_performance
+    config:
+      severity: error
+    test_definition: |
+      select *
+      from {{ ref('mart_artist_performance') }}
+      where best_new_music_count > total_reviews
+
+  - name: test_genre_rank_consistency
+    description: "Test that ranks are sequential and unique within each category"
+    test_type: generic
+    model: mart_genre_analysis
+    config:
+      severity: error
+    test_definition: |
+      with rank_checks as (
+        select 
+          current_count_rank,
+          current_score_rank,
+          current_bnm_rank,
+          count(*) as rank_count
+        from {{ ref('mart_genre_analysis') }}
+        group by current_count_rank, current_score_rank, current_bnm_rank
+        having count(*) > 1
+      )
+      select * from rank_checks
+
+  - name: test_genre_score_consistency
+    description: "Test that current_avg_score is between 0 and 10"
+    test_type: generic
+    model: mart_genre_analysis
+    config:
+      severity: error
+    test_definition: |
+      select *
+      from {{ ref('mart_genre_analysis') }}
+      where current_avg_score < 0 or current_avg_score > 10
+
+  - name: test_review_insights_percentage_sum
+    description: "Test that high + medium + low score percentages sum to approximately 100%"
+    test_type: generic
+    model: mart_review_insights
+    config:
+      severity: warn
+    test_definition: |
+      select *
+      from {{ ref('mart_review_insights') }}
+      where abs((high_score_percentage + medium_score_percentage + low_score_percentage) - 100) > 5
+
+  - name: test_review_insights_count_consistency
+    description: "Test that total_reviews >= unique_artists and total_reviews >= unique_reviewers"
+    test_type: generic
+    model: mart_review_insights
+    config:
+      severity: error
+    test_definition: |
+      select *
+      from {{ ref('mart_review_insights') }}
+      where total_reviews < unique_artists or total_reviews < unique_reviewers
+
+  - name: test_reviewer_score_consistency
+    description: "Test that min_score <= avg_score <= max_score for all reviewers"
+    test_type: generic
+    model: mart_editorial_dashboard
+    config:
+      severity: error
+    test_definition: |
+      select *
+      from {{ ref('mart_editorial_dashboard') }}
+      where not (min_score <= avg_score and avg_score <= max_score)
+
+  - name: test_reviewer_career_span_logic
+    description: "Test that latest_review_date >= first_review_date for all reviewers"
+    test_type: generic
+    model: mart_editorial_dashboard
+    config:
+      severity: error
+    test_definition: |
+      select *
+      from {{ ref('mart_editorial_dashboard') }}
+      where latest_review_date < first_review_date
+
+  - name: test_reviewer_bnm_logic
+    description: "Test that best_new_music_count <= total_reviews for all reviewers"
+    test_type: generic
+    model: mart_editorial_dashboard
+    config:
+      severity: error
+    test_definition: |
+      select *
+      from {{ ref('mart_editorial_dashboard') }}
+      where best_new_music_count > total_reviews
+
+  - name: test_reviewer_specialization_logic
+    description: "Test that specialization genre counts sum to total_reviews"
+    test_type: generic
+    model: mart_editorial_dashboard
+    config:
+      severity: warn
+    test_definition: |
+      select *
+      from {{ ref('mart_editorial_dashboard') }}
+      where abs((rock_reviews + pop_electronic_reviews + jazz_blues_reviews + 
+                hip_hop_rb_reviews + folk_country_reviews + experimental_reviews) - total_reviews) > 10
+
+  - name: test_performance_scores_validity
+    description: "Test that all performance scores are within expected ranges"
+    test_type: generic
+    model: mart_editorial_dashboard
+    config:
+      severity: error
+    test_definition: |
+      select *
+      from {{ ref('mart_editorial_dashboard') }}
+      where overall_performance_score < 0 or overall_performance_score > 10
+
+  - name: test_percentile_validity
+    description: "Test that all percentiles are between 1 and 10"
+    test_type: generic
+    model: mart_editorial_dashboard
+    config:
+      severity: error
+    test_definition: |
+      select *
+      from {{ ref('mart_editorial_dashboard') }}
+      where activity_percentile < 1 or activity_percentile > 10
+         or score_percentile < 1 or score_percentile > 10
+         or bnm_percentile < 1 or bnm_percentile > 10
+         or diversity_percentile < 1 or diversity_percentile > 10

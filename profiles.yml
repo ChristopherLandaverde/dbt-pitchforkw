@@ -1,0 +1,35 @@
+# dbt profiles.yml
+# This file should NOT be committed to version control
+# Copy this to ~/.dbt/profiles.yml or set DBT_PROFILES_DIR environment variable
+
+pitchfork_analytics:
+  target: dev
+  outputs:
+    dev:
+      type: sqlite
+      database: "/home/oppie/Desktop/pitch/database.sqlite"
+      schema: main
+      schema_directory: "/home/oppie/Desktop/pitch"
+      schemas_and_paths:
+        main: "/home/oppie/Desktop/pitch/database.sqlite"
+      threads: 4
+      
+    prod:
+      type: sqlite
+      database: "/home/oppie/Desktop/pitch/database.sqlite"
+      schema: main
+      schema_directory: "/home/oppie/Desktop/pitch"
+      schemas_and_paths:
+        main: "/home/oppie/Desktop/pitch/database.sqlite"
+      threads: 4
+      
+    # Example for PostgreSQL (uncomment and configure as needed)
+    # prod:
+    #   type: postgres
+    #   host: localhost
+    #   user: your_username
+    #   password: your_password
+    #   port: 5432
+    #   dbname: pitchfork_analytics
+    #   schema: analytics
+    #   threads: 4

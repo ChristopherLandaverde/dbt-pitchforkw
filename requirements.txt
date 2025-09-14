@@ -1,0 +1,12 @@
+# dbt requirements
+dbt-core>=1.6.0
+dbt-sqlite>=1.6.0
+
+# Optional: for other database adapters
+# dbt-postgres>=1.6.0
+# dbt-snowflake>=1.6.0
+# dbt-bigquery>=1.6.0
+
+# Development tools
+pytest>=7.0.0
+pytest-dbt>=0.1.0

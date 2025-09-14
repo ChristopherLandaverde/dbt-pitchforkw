@@ -1,0 +1,79 @@
+# dbt Project Rules for Pitchfork Music Reviews Analytics
+
+## Project Overview
+This is a dbt project for analyzing Pitchfork music review data. See `docs/PRD.md` for complete product requirements and business context.
+
+## Project Structure
+- Use standard dbt project structure with staging/, intermediate/, and marts/ folders
+- All models should be in SQL (.sql files) with appropriate materializations
+- Use seeds/ for reference data and macros/ for reusable SQL logic
+- Store documentation in schema.yml files alongside models
+- Keep project documentation in docs/ folder (PRD, README, etc.)
+
+## Naming Conventions
+- Staging models: `stg_{source}_{table}` (e.g., `stg_pitchfork_reviews`)
+- Intermediate models: `int_{business_concept}` (e.g., `int_artist_metrics`)
+- Mart models: `mart_{business_area}` (e.g., `mart_genre_trends`)
+- All model names should be lowercase with underscores
+- Column names should be snake_case and descriptive
+
+## SQL Style Guidelines
+- Use 2-space indentation consistently
+- Put commas at the beginning of lines for better git diffs
+- Use meaningful CTEs with descriptive names
+- Always use explicit column selection (avoid SELECT *)
+- Use consistent date formatting (YYYY-MM-DD)
+- Add comments for complex business logic
+
+## dbt Best Practices
+- Every model must have a description in schema.yml
+- All primary keys must have unique and not_null tests
+- Use incremental models for large fact tables where appropriate
+- Implement data quality tests for critical business rules
+- Use macros for repeated logic across models
+- Tag models appropriately (staging, marts, daily, etc.)
+
+## Model Materializations
+- staging/: views (unless performance requires table)
+- intermediate/: views or ephemeral
+- marts/: tables or incremental for large datasets
+- Use incremental for models with >100k rows that grow daily
+
+## Documentation Requirements
+- Every model needs description, column descriptions for key fields
+- Document data sources and transformations applied
+- Include examples of how to use mart tables
+- Document any assumptions or business rules applied
+
+## Testing Strategy
+- Test all primary keys for uniqueness and not_null
+- Test foreign key relationships between models
+- Add accepted_values tests for categorical columns
+- Implement custom tests for business logic validation
+- Test data freshness for critical models
+
+## Performance Optimization
+- Use appropriate indexes in target database
+- Optimize join orders in complex models
+- Consider partitioning for time-series data
+- Monitor query performance and optimize accordingly
+- Use dbt-utils for efficient operations
+
+## Code Organization
+- Group related models in subdirectories within each layer
+- Use consistent file naming that reflects model purpose
+- Keep models focused on single business concepts
+- Extract complex logic into intermediate models
+
+## Data Quality
+- Implement row count validation between staging and marts
+- Add tests for expected score ranges (0-10 for Pitchfork)
+- Validate date ranges and temporal consistency
+- Test for duplicate records and data completeness
+
+## When writing dbt models:
+1. Always start with a clear description of what the model does
+2. Use meaningful CTE names that describe the transformation
+3. Add inline comments for complex business logic
+4. Follow the layered approach: raw -> staging -> intermediate -> marts
+5. Ensure models can be run independently and in any order within their layer

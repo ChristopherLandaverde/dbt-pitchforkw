@@ -1,0 +1,60 @@
+name: 'pitchfork_analytics'
+version: '1.0.0'
+config-version: 2
+
+# This setting configures which "profile" dbt uses for this project.
+profile: 'pitchfork_analytics'
+
+# These configurations specify where dbt should look for different types of files.
+# The `model-paths` config, for example, states that models in this project can be
+# found in the "models/" directory. You probably won't need to change these!
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+target-path: "target"  # directory which will store compiled SQL files
+clean-targets:         # directories to be removed by `dbt clean`
+  - "target"
+  - "dbt_packages"
+
+# Configuring models
+# Full documentation: https://docs.getdbt.com/reference/model-configs
+models:
+  pitchfork_analytics:
+    # Config indicated by + and applies to all files under models/example/
+    staging:
+      +materialized: view
+    intermediate:
+      +materialized: view
+    marts:
+      +materialized: table
+
+# Configuring seeds (when needed)
+# seeds:
+#   pitchfork_analytics:
+#     +schema: reference
+#     +materialized: table
+
+# Configuring snapshots (when needed)
+# snapshots:
+#   pitchfork_analytics:
+#     +target_schema: snapshots
+#     +strategy: timestamp
+#     +updated_at: updated_at
+
+# Variables
+vars:
+  # Score range validation
+  min_score: 0
+  max_score: 10
+  
+  # Date ranges for analysis
+  analysis_start_date: '2000-01-01'
+  analysis_end_date: '2024-12-31'
+  
+  # Business rules
+  min_reviews_for_trending: 5
+  score_trend_window_months: 3

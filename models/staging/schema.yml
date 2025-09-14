@@ -1,0 +1,83 @@
+version: 2
+
+sources:
+  - name: raw_pitchfork
+    description: "Raw Pitchfork music review data from SQLite database"
+    schema: main
+    tables:
+      - name: reviews
+        description: "Raw review data from Pitchfork"
+        columns:
+          - name: reviewid
+            description: "Unique review identifier"
+            tests:
+              - unique
+              - not_null
+          - name: artist
+            description: "Artist name"
+            tests:
+              - not_null
+          - name: title
+            description: "Album title"
+            tests:
+              - not_null
+          - name: score
+            description: "Review score (0-10)"
+            tests:
+              - not_null
+              - dbt_expectations.expect_column_values_to_be_between:
+                  arguments:
+                    min_value: 0
+                    max_value: 10
+          - name: pub_date
+            description: "Date of review publication"
+            tests:
+              - not_null
+          - name: author
+            description: "Reviewer name"
+          - name: best_new_music
+            description: "Best new music flag (0 or 1)"
+          - name: url
+            description: "Review URL"
+
+models:
+  - name: stg_pitchfork_reviews
+    description: "Cleaned and standardized Pitchfork review data"
+    columns:
+      - name: review_id
+        description: "Unique review identifier"
+        tests:
+          - unique
+          - not_null
+      - name: artist_name
+        description: "Standardized artist name"
+        tests:
+          - not_null
+      - name: album_name
+        description: "Standardized album title"
+        tests:
+          - not_null
+      - name: score
+        description: "Review score (0-10)"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 10
+      - name: review_date
+        description: "Date of review publication"
+        tests:
+          - not_null
+      - name: reviewer
+        description: "Reviewer name"
+      - name: best_new_music
+        description: "Best new music flag (0 or 1)"
+      - name: review_url
+        description: "Review URL"
+      - name: year
+        description: "Year of review"
+      - name: month
+        description: "Month of review"
+      - name: decade
+        description: "Decade of review"
