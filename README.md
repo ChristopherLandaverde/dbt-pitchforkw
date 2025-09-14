@@ -4,7 +4,7 @@ I chose Pitchfork review data because it represents the kind of **messy, real-wo
 - Inconsistent text fields and naming conventions
 - Missing values and data quality issues  
 - Complex relationships requiring thoughtful modeling
-- Multiple business stakeholder needs (editorial, management, analysts)
+- Multiple business stakeholder needs (editorial, management, analysts
 
 This project demonstrates my ability to take raw, unstructured data and transform it into clean, reliable, business-ready datasets using modern data engineering practices.
 
