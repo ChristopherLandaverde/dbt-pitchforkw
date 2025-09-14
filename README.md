@@ -1,6 +1,12 @@
 # 🎵 Pitchfork Music Reviews Analytics
 
-A comprehensive **dbt (data build tool)** project that transforms raw Pitchfork music review data into actionable business insights through a modern data engineering pipeline.
+I chose Pitchfork review data because it represents the kind of **messy, real-world dataset** that data engineers encounter daily:
+- Inconsistent text fields and naming conventions
+- Missing values and data quality issues  
+- Complex relationships requiring thoughtful modeling
+- Multiple business stakeholder needs (editorial, management, analysts)
+
+This project demonstrates my ability to take raw, unstructured data and transform it into clean, reliable, business-ready datasets using modern data engineering practices.
 
 ## 🎯 Project Overview
 
